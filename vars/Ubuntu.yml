@@ -1,0 +1,7 @@
+---
+  pkgs_osspec:
+    - python-dev
+    - python-pip
+    - runit
+
+  sysconfig_dir: /etc/default

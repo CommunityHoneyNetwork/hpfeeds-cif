@@ -1,0 +1,73 @@
+---
+  - hosts: all
+
+    tasks:
+      - name: Gather | print os info
+        debug:
+          msg: "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}"
+
+      - name: Gather | os info
+        include_vars: "{{ item }}"
+        with_first_found:
+          - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+          - "{{ ansible_distribution }}.yml"
+        tags: vars
+
+      - name: Gather | default info
+        include_vars:
+          file: default.yml
+        tags: vars
+
+      - name: hpfeeds-cif | install dependency packages
+        package:
+          name: "{{ item }}"
+        with_items: "{{ pkgs }}"
+
+      - name: hpfeeds-cif | install os-specific dependency packages
+        package:
+          name: "{{ item }}"
+        with_items: "{{ pkgs_osspec }}"
+
+      - name: hpfeeds-cif | install python requirements
+        pip:
+          requirements: /opt/requirements.txt
+
+      - name: hpfeeds-cif | clone hpfeeds for utils
+        git:
+          repo: "{{ hpfeeds_repo }}"
+          version: "{{ hpfeeds_version }}"
+          dest: "{{ hpfeeds_dir }}"
+          accept_hostkey: yes
+          depth: 1
+
+      - name: hpfeeds-cif | link to hpfeeds in hpfeeds-cif
+        file:
+          state: link
+          src: "{{ hpfeeds_dir }}/hpfeeds/lib/hpfeeds.py"
+          dest: "{{ hpfeeds_cif_dir }}/hpfeeds-cif/hpfeeds.py"
+
+      - name: hpfeeds-cif | copy sysconfig file
+        copy:
+          src: hpfeeds-cif.sysconfig
+          dest: "{{ sysconfig_dir }}/hpfeeds-cif"
+          mode: 0644
+
+      - name: hpfeeds-cif | install Runit
+        yum:
+          name: "{{ runit_rpm_src }}"
+          state: present
+        when: ansible_distribution|lower == 'centos'
+
+      - name: hpfeeds-cif | create runit service dirs
+        file:
+          path: /etc/service/hpfeeds-cif
+          state: directory
+          mode: 0755
+
+      - name: hpfeeds-cif | copy runit runfile
+        template:
+          src: hpfeeds-cif.run.j2
+          dest: /etc/service/hpfeeds-cif/run
+          owner: root
+          group: root
+          mode: 0755
