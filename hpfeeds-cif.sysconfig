@@ -1,4 +1,4 @@
-# This file is read from /etc/sysconfig/hpfeeds-logger
+# This file is read from /etc/sysconfig/hpfeeds-cif
 # or /etc/default/hpfeeds-logger, depending on the distro version
 #
 # Defaults here are for containers, but can be adjusted

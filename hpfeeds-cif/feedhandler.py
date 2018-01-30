@@ -19,6 +19,7 @@ def handle_message(msg, host, token, provider):
                  remote=host,
                  verify_ssl=False)
     cli.indicators_create(json.dumps(data))
+    return
 
 
 def parse_config(config_file):
@@ -65,7 +66,6 @@ def main():
         return 1
 
     def on_message(identifier, channel, payload):
-        sys.stderr.write("Handling message.")
         for msg in processor.process(identifier, channel, payload, ignore_errors=True):
             handle_message(msg, cif_host, cif_token, cif_provider)
 
