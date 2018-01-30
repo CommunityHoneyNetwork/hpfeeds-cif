@@ -18,7 +18,8 @@ def handle_message(msg, host, token, provider):
     cli = Client(token=token,
                  remote=host,
                  verify_ssl=False)
-    cli.indicators_create(json.dumps(data))
+    output = cli.indicators_create(json.dumps(data))
+    return
 
 
 def parse_config(config_file):
@@ -62,10 +63,10 @@ def main():
     try:
         hpc = hpfeeds.new(host, port, ident, secret)
     except hpfeeds.FeedException, e:
+        print("You hit an exception")
         return 1
 
     def on_message(identifier, channel, payload):
-        sys.stderr.write("Handling message.")
         for msg in processor.process(identifier, channel, payload, ignore_errors=True):
             handle_message(msg, cif_host, cif_token, cif_provider)
 

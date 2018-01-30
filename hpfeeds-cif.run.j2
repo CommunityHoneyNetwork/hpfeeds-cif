@@ -16,14 +16,14 @@ then
 
     cp ./hpfeeds-cif.cfg.template ./hpfeeds-cif.cfg
 
-    sed -i "s/ident *=.*/ident = $IDENT/" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/secret *=.*/secret = $SECRET/" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/hp_host *=.*/hp_host = ${HPFEEDS_HOST}/" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/hp_port *=.*/hp_port = ${HPFEEDS_PORT}/" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/channels *=.*/channels = $CHANNELS/" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/cif_host *=.*/cif_host = ${CIF_HOST}/" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/cif_token *=.*/cif_token = ${CIF_TOKEN}/" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/cif_provider *=.*/cif_provider = ${CIF_PROVIDER}/" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/ident *=.*/ident = $IDENT/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/secret *=.*/secret = $SECRET/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/hp_host *=.*/hp_host = ${HPFEEDS_HOST}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/hp_port *=.*/hp_port = ${HPFEEDS_PORT}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/channels *=.*/channels = $CHANNELS/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s%cif_host =.*%cif_host = ${CIF_HOST}%g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/cif_token *=.*/cif_token = ${CIF_TOKEN}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/cif_provider *=.*/cif_provider = ${CIF_PROVIDER}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
 
     # Generate config file for hpfeeds broker and register
     cd {{ hpfeeds_dir }}/hpfeeds/broker/
