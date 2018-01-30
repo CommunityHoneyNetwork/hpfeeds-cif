@@ -18,7 +18,7 @@ def handle_message(msg, host, token, provider):
     cli = Client(token=token,
                  remote=host,
                  verify_ssl=False)
-    output = cli.indicators_create(json.dumps(data))
+    cli.indicators_create(json.dumps(data))
     return
 
 
@@ -63,7 +63,6 @@ def main():
     try:
         hpc = hpfeeds.new(host, port, ident, secret)
     except hpfeeds.FeedException, e:
-        print("You hit an exception")
         return 1
 
     def on_message(identifier, channel, payload):
