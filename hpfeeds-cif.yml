@@ -28,6 +28,20 @@
           name: "{{ item }}"
         with_items: "{{ pkgs_osspec }}"
 
+      - name: hpfeeds-cif | update pip
+        pip:
+          name: pip
+          state: latest
+        tags:
+          - skip_ansible_lint
+
+      - name: hpfeeds-cif | update setuptools
+        pip:
+          name: setuptools
+          state: latest
+        tags:
+          - skip_ansible_lint
+
       - name: hpfeeds-cif | install python requirements
         pip:
           requirements: /opt/requirements.txt
