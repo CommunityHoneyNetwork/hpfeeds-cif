@@ -7,6 +7,8 @@ trap "exit 143" SIGTERM
 source {{ sysconfig_dir }}/hpfeeds-cif
 export $PYTHONPATH
 
+
+
 cd {{ hpfeeds_cif_dir }}
 if [[ ! -f ./hpfeeds-cif.cfg ]]
 then
