@@ -9,3 +9,7 @@ channels = amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,t
 cif_host = http://cifv3
 cif_token =
 cif_provider = chn
+cif_tlp = amber
+cif_confidence = 8
+cif_tags = honeypot
+cif_group = everyone

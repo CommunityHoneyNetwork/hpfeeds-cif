@@ -26,6 +26,10 @@ then
     sed -i "s%cif_host =.*%cif_host = ${CIF_HOST}%g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
     sed -i "s/cif_token *=.*/cif_token = ${CIF_TOKEN}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
     sed -i "s/cif_provider *=.*/cif_provider = ${CIF_PROVIDER}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/cif_tlp *=.*/cif_tlp = ${CIF_TLP}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/cif_confidence *=.*/cif_confidence = ${CIF_CONFIDENCE}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/cif_tags *=.*/cif_tags = ${CIF_TAGS}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/cif_group *=.*/cif_group = ${CIF_GROUP}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
 
     # Generate config file for hpfeeds broker and register
     cd {{ hpfeeds_dir }}/hpfeeds/broker/
