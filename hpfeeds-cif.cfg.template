@@ -13,3 +13,4 @@ cif_tlp = amber
 cif_confidence = 8
 cif_tags = honeypot
 cif_group = everyone
+cif_verify_ssl = False
