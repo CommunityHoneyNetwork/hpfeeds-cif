@@ -9,7 +9,7 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-def handle_message(msg, host, token, provider, tlp, confidence, tags, group, verify_ssl):
+def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl):
     indicator = msg['src_ip']
     data = {"indicator": indicator,
             "tlp": tlp,
@@ -17,13 +17,16 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ver
             "tags": tags,
             "provider": provider,
             "group": group}
-    logging.debug('Initializing Client instance with: {0}, {1}, {2}'.format(token, host, verify_ssl))
+    logging.debug('Initializing Client instance with: {0}, {1}, {2}'.format(token, host, ssl))
     cli = Client(token=token,
                  remote=host,
-                 verify_ssl=verify_ssl)
+                 verify_ssl=ssl)
     logging.debug('Submitting indicator: {0}'.format(data))
-    cli.indicators_create(json.dumps(data))
-    logging.debug('Indicator submitted')
+    try:
+      cli.indicators_create(json.dumps(data))
+      logging.debug('Indicator submitted')
+    except Exception as e:
+      logging.error('Error submitting indicator: {0}'.format(repr(e)))
     return
 
 
