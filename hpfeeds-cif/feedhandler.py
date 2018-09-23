@@ -49,7 +49,7 @@ def parse_config(config_file):
     config['cif_confidence'] = parser.get('cifv3', 'cif_confidence')
     config['cif_tags'] = parser.get('cifv3', 'cif_tags')
     config['cif_group'] = parser.get('cifv3', 'cif_group')
-    config['cif_verify_ssl'] = parser.get('cifv3', 'cif_verify_ssl')
+    config['cif_verify_ssl'] = parser.getboolean('cifv3', 'cif_verify_ssl')
 
     logging.debug('Parsed config: {0}'.format(repr(config)))
     return config
