@@ -22,8 +22,8 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ver
                  remote=host,
                  verify_ssl=verify_ssl)
     logging.debug('Submitting indicator: {0}'.format(data))
-    ret = cli.indicators_create(json.dumps(data))
-    logging.debug('Recieved response: {0}'.format(ret))
+    cli.indicators_create(json.dumps(data))
+    logging.debug('Indicator submitted')
     return
 
 
