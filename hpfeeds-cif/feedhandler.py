@@ -5,7 +5,9 @@ import hpfeeds
 from ConfigParser import ConfigParser
 import processors
 from cifsdk.client.http import HTTP as Client
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
 
 def handle_message(msg, host, token, provider, tlp, confidence, tags, group, verify_ssl):
     indicator = msg['src_ip']
@@ -15,10 +17,13 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ver
             "tags": tags,
             "provider": provider,
             "group": group}
+    logging.debug('Initializing Client instance with: {0}, {1}, {2}'.format(token, host, verify_ssl))
     cli = Client(token=token,
                  remote=host,
                  verify_ssl=verify_ssl)
-    cli.indicators_create(json.dumps(data))
+    logging.debug('Submitting indicator: {0}'.format(data))
+    ret = cli.indicators_create(json.dumps(data))
+    logging.debug('Recieved response: {0}'.format(ret))
     return
 
 
@@ -46,6 +51,7 @@ def parse_config(config_file):
     config['cif_group'] = parser.get('cifv3', 'cif_group')
     config['cif_verify_ssl'] = parser.get('cifv3', 'cif_verify_ssl')
 
+    logging.debug('Parsed config: {0}'.format(repr(config)))
     return config
 
 
@@ -69,10 +75,11 @@ def main():
     cif_verify_ssl = config['cif_verify_ssl']
 
     processor = processors.HpfeedsMessageProcessor()
-
+    logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
     try:
         hpc = hpfeeds.new(host, port, ident, secret)
     except hpfeeds.FeedException, e:
+        logging.error('Experienced FeedException: {0}'.format(repr(e)))
         return 1
 
     def on_message(identifier, channel, payload):
