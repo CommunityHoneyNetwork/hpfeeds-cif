@@ -1,8 +1,9 @@
 FROM centos:centos7
 
 LABEL maintainer Alexander Merck <alexander.t.merck@gmail.com>
+LABEL maintainer Jesse Bowling <jessebowling@gmail.com>
 LABEL name "hpfeeds-cif"
-LABEL version "0.1"
+LABEL version "0.2"
 LABEL release "1"
 LABEL summary "HPFeeds CIFv3 handler"
 LABEL description "HPFeeds CIFv3 handler is a tool for generating CIFv3 entries for honeypot events."

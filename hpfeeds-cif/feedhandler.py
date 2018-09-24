@@ -5,20 +5,28 @@ import hpfeeds
 from ConfigParser import ConfigParser
 import processors
 from cifsdk.client.http import HTTP as Client
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
 
-def handle_message(msg, host, token, provider):
+def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl):
     indicator = msg['src_ip']
     data = {"indicator": indicator,
-            "tlp": "amber",
-            "confidence": "8",
-            "tags": "honeypot",
+            "tlp": tlp,
+            "confidence": confidence,
+            "tags": tags,
             "provider": provider,
-            "group": "everyone"}
+            "group": group}
+    logging.debug('Initializing Client instance with: {0}, {1}, {2}'.format(token, host, ssl))
     cli = Client(token=token,
                  remote=host,
-                 verify_ssl=False)
-    cli.indicators_create(json.dumps(data))
+                 verify_ssl=ssl)
+    logging.debug('Submitting indicator: {0}'.format(data))
+    try:
+      cli.indicators_create(json.dumps(data))
+      logging.debug('Indicator submitted')
+    except Exception as e:
+      logging.error('Error submitting indicator: {0}'.format(repr(e)))
     return
 
 
@@ -40,7 +48,13 @@ def parse_config(config_file):
     config['cif_token'] = parser.get('cifv3', 'cif_token')
     config['cif_host'] = parser.get('cifv3', 'cif_host')
     config['cif_provider'] = parser.get('cifv3', 'cif_provider')
+    config['cif_tlp'] = parser.get('cifv3', 'cif_tlp')
+    config['cif_confidence'] = parser.get('cifv3', 'cif_confidence')
+    config['cif_tags'] = parser.get('cifv3', 'cif_tags')
+    config['cif_group'] = parser.get('cifv3', 'cif_group')
+    config['cif_verify_ssl'] = parser.getboolean('cifv3', 'cif_verify_ssl')
 
+    logging.debug('Parsed config: {0}'.format(repr(config)))
     return config
 
 
@@ -57,17 +71,23 @@ def main():
     cif_token = config['cif_token']
     cif_host = config['cif_host']
     cif_provider = config['cif_provider']
+    cif_tlp = config['cif_tlp']
+    cif_confidence = config['cif_confidence']
+    cif_tags = config['cif_tags']
+    cif_group = config['cif_group']
+    cif_verify_ssl = config['cif_verify_ssl']
 
     processor = processors.HpfeedsMessageProcessor()
-
+    logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
     try:
         hpc = hpfeeds.new(host, port, ident, secret)
     except hpfeeds.FeedException, e:
+        logging.error('Experienced FeedException: {0}'.format(repr(e)))
         return 1
 
     def on_message(identifier, channel, payload):
         for msg in processor.process(identifier, channel, payload, ignore_errors=True):
-            handle_message(msg, cif_host, cif_token, cif_provider)
+            handle_message(msg, cif_host, cif_token, cif_provider, cif_tlp, cif_confidence, cif_tags, cif_group, cif_verify_ssl)
 
     def on_error(payload):
         sys.stderr.write("Handling error.")
