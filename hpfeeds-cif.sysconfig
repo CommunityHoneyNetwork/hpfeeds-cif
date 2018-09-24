@@ -10,7 +10,7 @@ HPFEEDS_PORT=10000
 MONGODB_HOST='mongodb'
 MONGODB_PORT=27017
 
-CIF_HOST='http://cifv3'
+CIF_HOST='https://cifv3'
 CIF_TOKEN=''
 CIF_PROVIDER='chn'
 CIF_TLP='green'
