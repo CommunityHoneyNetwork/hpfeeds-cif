@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+from datetime import datetime
 import hpfeeds
 from ConfigParser import ConfigParser
 import processors
@@ -9,6 +10,7 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
+
 def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl):
     indicator = msg['src_ip']
     data = {"indicator": indicator,
@@ -16,7 +18,8 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl
             "confidence": confidence,
             "tags": tags,
             "provider": provider,
-            "group": group}
+            "group": group,
+            "lasttime": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
     logging.debug('Initializing Client instance with: {0}, {1}, {2}'.format(token, host, ssl))
     cli = Client(token=token,
                  remote=host,
