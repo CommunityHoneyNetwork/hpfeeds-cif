@@ -1,3 +1,4 @@
 gevent==1.1.1
 pymongo==2.7.2
 cifsdk>=3.0.0a25
+IPy

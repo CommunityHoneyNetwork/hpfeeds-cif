@@ -47,6 +47,7 @@ def parse_config(config_file):
     config['hpf_secret'] = parser.get('hpfeeds', 'secret')
     config['hpf_port'] = parser.getint('hpfeeds', 'hp_port')
     config['hpf_host'] = parser.get('hpfeeds', 'hp_host')
+    config['ignore_rfc1918'] = parser.getboolean('hpfeeds', 'ignore_rfc1918')
 
     config['cif_token'] = parser.get('cifv3', 'cif_token')
     config['cif_host'] = parser.get('cifv3', 'cif_host')
@@ -71,6 +72,7 @@ def main():
     channels = [c.encode('utf-8') for c in config['hpf_feeds']]
     ident = config['hpf_ident'].encode('utf-8')
     secret = config['hpf_secret'].encode('utf-8')
+    ignore_rfc1918 = config['ignore_rfc1918']
     cif_token = config['cif_token']
     cif_host = config['cif_host']
     cif_provider = config['cif_provider']
@@ -89,8 +91,9 @@ def main():
         return 1
 
     def on_message(identifier, channel, payload):
-        for msg in processor.process(identifier, channel, payload, ignore_errors=True):
-            handle_message(msg, cif_host, cif_token, cif_provider, cif_tlp, cif_confidence, cif_tags, cif_group, cif_verify_ssl)
+        for msg in processor.process(identifier, channel, payload, ignore_errors=True, ignore_rfc1918=ignore_rfc1918):
+            handle_message(msg, cif_host, cif_token, cif_provider, cif_tlp, cif_confidence,
+                           cif_tags, cif_group, cif_verify_ssl)
 
     def on_error(payload):
         sys.stderr.write("Handling error.")

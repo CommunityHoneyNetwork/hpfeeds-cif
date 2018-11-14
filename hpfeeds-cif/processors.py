@@ -4,6 +4,7 @@ import urlparse
 import socket
 import hashlib
 import re
+from IPy import IP
 
 IPV6_REGEX = re.compile(r'::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')
 
@@ -589,6 +590,10 @@ class HpfeedsMessageProcessor(object):
         self.maxmind_geo = None
         self.maxmind_asn = None
 
+    @staticmethod
+    def is_rfc1918_addr(ip):
+        return False if (IP(ip).iptype() == "PUBLIC") else True
+
     def geo_intelligence_enrichment(self, messages):
         for message in messages:
             src_geo = geo_intel(self.maxmind_geo, self.maxmind_asn, message.get('src_ip'), prefix='src_')
@@ -596,7 +601,7 @@ class HpfeedsMessageProcessor(object):
             dst_geo = geo_intel(self.maxmind_geo, self.maxmind_asn, message.get('dest_ip'), prefix='dest_')
             message.update(dst_geo)
 
-    def process(self, identifier, channel, payload, ignore_errors=False):
+    def process(self, identifier, channel, payload, ignore_errors=False, ignore_rfc1918=False):
         procs = PROCESSORS.get(channel, [])
         results = []
         for processor in procs:
@@ -611,9 +616,11 @@ class HpfeedsMessageProcessor(object):
             if message:
                 if isinstance(message, list):
                     for msg in message:
-                        results.append(msg)
+                        if not (ignore_rfc1918 and self.is_rfc1918_addr(msg.get('src_ip'))):
+                            results.append(msg)
                 else:
-                    results.append(message)
+                    if not (ignore_rfc1918 and self.is_rfc1918_addr(message.get('src_ip'))):
+                        results.append(message)
         if self.maxmind_geo or self.maxmind_asn:
             self.geo_intelligence_enrichment(results)
         return results
