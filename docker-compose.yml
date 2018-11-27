@@ -3,14 +3,6 @@ services:
   ubuntu:
     build:
       context: .
-      dockerfile: Dockerfile-ubuntu
     image: hpfeeds-cif:ubuntu
     volumes:
       - ./hpfeeds-cif.sysconfig:/etc/default/hpfeeds-cif:z
-  centos:
-    build:
-      context: .
-      dockerfile: Dockerfile-centos
-    image: hpfeeds-cif:centos
-    volumes:
-      - ./hpfeeds-cif.sysconfig:/etc/sysconfig/hpfeeds-cif:z
