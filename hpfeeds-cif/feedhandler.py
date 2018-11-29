@@ -13,10 +13,11 @@ logging.basicConfig(level=logging.DEBUG)
 
 def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl):
     indicator = msg['src_ip']
+    app = msg['app']
     data = {"indicator": indicator,
             "tlp": tlp,
             "confidence": confidence,
-            "tags": tags,
+            "tags": tags + [app],
             "provider": provider,
             "group": group,
             "lasttime": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
@@ -54,7 +55,7 @@ def parse_config(config_file):
     config['cif_provider'] = parser.get('cifv3', 'cif_provider')
     config['cif_tlp'] = parser.get('cifv3', 'cif_tlp')
     config['cif_confidence'] = parser.get('cifv3', 'cif_confidence')
-    config['cif_tags'] = parser.get('cifv3', 'cif_tags')
+    config['cif_tags'] = parser.get('cifv3', 'cif_tags').split(',')
     config['cif_group'] = parser.get('cifv3', 'cif_group')
     config['cif_verify_ssl'] = parser.getboolean('cifv3', 'cif_verify_ssl')
 
