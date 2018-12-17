@@ -567,6 +567,57 @@ def elastichoney_events(identifier, payload):
         **kwargs
     )
 
+
+def rdphoney_sessions(identifier, payload):
+    try:
+        dec = ezdict(json.loads(str(payload)))
+    except:
+        print 'exception processing amun event'
+        traceback.print_exc()
+        return
+    return create_message(
+        'rdphoney.sessions',
+        identifier,
+        src_ip=dec.peerIP,
+        dst_ip=dec.hostIP,
+        src_port=dec.peerPort,
+        dst_port=dec.hostPort,
+        vendor_product='RDPHoney',
+        app='rdphoney',
+        direction='inbound',
+        ids_type='network',
+        severity='high',
+        signature='Connection to Honeypot',
+        username=dec.username,
+        data=dec.data
+    )
+
+
+def uhp_events(identifier, payload):
+    try:
+        dec = ezdict(json.loads(str(payload)))
+    except:
+        print 'exception processing amun event'
+        traceback.print_exc()
+        return
+    return create_message(
+        'uhp.events',
+        identifier,
+        src_ip=dec.src_ip,
+        dst_ip=dec.dst_ip,
+        src_port=dec.src_port,
+        dst_port=dec.dst_port,
+        vendor_product='UHP',
+        app='uhp',
+        direction='inbound',
+        ids_type='network',
+        severity='high',
+        signature='Connection to Honeypot',
+        action=dec.action,
+        message=dec.message
+    )
+
+
 PROCESSORS = {
     'amun.events': [amun_events],
     'glastopf.events': [glastopf_event],
@@ -582,6 +633,8 @@ PROCESSORS = {
     'p0f.events': [p0f_events],
     'suricata.events': [suricata_events],
     'elastichoney.events': [elastichoney_events],
+    'rdphoney.sessions': [rdphoney_sessions],
+    'uhp.events': [uhp_events]
 }
 
 
