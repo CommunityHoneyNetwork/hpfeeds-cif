@@ -20,3 +20,6 @@ CIF_GROUP='everyone'
 CIF_VERIFY_SSL=False
 
 IGNORE_RFC1918=True
+
+# Include the honeypot specific tags in CIFv3
+INCLUDE_HP_TAGS=True

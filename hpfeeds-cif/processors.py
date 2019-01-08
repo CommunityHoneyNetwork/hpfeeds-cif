@@ -132,6 +132,7 @@ def glastopf_event(identifier, payload):
     return create_message(
         'glastopf.events',
         identifier,
+        tags=dec.tags,
         src_ip=dec.source[0],
         src_port=dec.source[1],
         dst_ip=None,
@@ -156,6 +157,7 @@ def dionaea_capture(identifier, payload):
     return create_message(
         'dionaea.capture',
         identifier,
+        tags=dec.tags,
         src_ip=dec.saddr,
         dst_ip=dec.daddr,
         src_port=dec.sport,
@@ -182,6 +184,7 @@ def dionaea_connections(identifier, payload):
     return create_message(
         'dionaea.connections',
         identifier,
+        tags=dec.tags,
         src_ip=dec.remote_host,
         dst_ip=dec.local_host,
         src_port=dec.remote_port,
@@ -241,6 +244,7 @@ def kippo_cowrie_sessions(identifier, payload, name, channel):
     base_message = create_message(
         channel,
         identifier,
+        tags=dec.tags,
         src_ip=dec.peerIP,
         dst_ip=dec.hostIP,
         src_port=dec.peerPort,
@@ -305,6 +309,7 @@ def conpot_events(identifier, payload):
     return create_message(
         'conpot.events-'+dec.data_type,
         identifier,
+        tags=dec.tags,
         src_ip=remote,
         dst_ip=dec.public_ip,
         src_port=port,
@@ -435,6 +440,7 @@ def amun_events(identifier, payload):
     return create_message(
         'amun.events',
         identifier,
+        tags=dec.tags,
         src_ip=dec.attackerIP,
         dst_ip=dec.victimIP,
         src_port=dec.attackerPort,
@@ -459,6 +465,7 @@ def wordpot_event(identifier, payload):
     return create_message(
         'wordpot.alerts',
         identifier,
+        tags=dec.tags,
         src_ip=dec.source_ip,
         dst_ip=dec.dest_ip,
         src_port=dec.source_port,
@@ -578,6 +585,7 @@ def rdphoney_sessions(identifier, payload):
     return create_message(
         'rdphoney.sessions',
         identifier,
+        tags=dec.tags,
         src_ip=dec.peerIP,
         dst_ip=dec.hostIP,
         src_port=dec.peerPort,

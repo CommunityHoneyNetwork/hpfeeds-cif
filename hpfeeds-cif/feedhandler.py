@@ -11,13 +11,16 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 
-def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl):
+def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl, include_hp_tags=False):
     indicator = msg['src_ip']
     app = msg['app']
+    msg_tags = []
+    if include_hp_tags and msg['tags']:
+        msg_tags = msg['tags']
     data = {"indicator": indicator,
             "tlp": tlp,
             "confidence": confidence,
-            "tags": tags + [app],
+            "tags": tags + [app] + msg_tags,
             "provider": provider,
             "group": group,
             "lasttime": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
@@ -49,6 +52,7 @@ def parse_config(config_file):
     config['hpf_port'] = parser.getint('hpfeeds', 'hp_port')
     config['hpf_host'] = parser.get('hpfeeds', 'hp_host')
     config['ignore_rfc1918'] = parser.getboolean('hpfeeds', 'ignore_rfc1918')
+    config['include_hp_tags'] = parser.getboolean('hpfeeds', 'include_hp_tags')
 
     config['cif_token'] = parser.get('cifv3', 'cif_token')
     config['cif_host'] = parser.get('cifv3', 'cif_host')
@@ -74,6 +78,7 @@ def main():
     ident = config['hpf_ident'].encode('utf-8')
     secret = config['hpf_secret'].encode('utf-8')
     ignore_rfc1918 = config['ignore_rfc1918']
+    include_hp_tags = config['include_hp_tags']
     cif_token = config['cif_token']
     cif_host = config['cif_host']
     cif_provider = config['cif_provider']
@@ -94,7 +99,7 @@ def main():
     def on_message(identifier, channel, payload):
         for msg in processor.process(identifier, channel, payload, ignore_errors=True, ignore_rfc1918=ignore_rfc1918):
             handle_message(msg, cif_host, cif_token, cif_provider, cif_tlp, cif_confidence,
-                           cif_tags, cif_group, cif_verify_ssl)
+                           cif_tags, cif_group, cif_verify_ssl, include_hp_tags)
 
     def on_error(payload):
         sys.stderr.write("Handling error.")
