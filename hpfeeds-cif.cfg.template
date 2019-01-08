@@ -5,6 +5,7 @@ hp_host = localhost
 hp_port = 20000
 channels = amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,thug.files,beeswarn.feeder,cuckoo.analysis,kippo.sessions,cowrie.sessions,glastopf.events,glastopf.files,mwbinary.dionaea.sensorunique,wordpot.events,shockpot.events,p0f.events,suricata.events,elastichoney.events,rdphoney.sessions,uhp.events
 ignore_rfc1918=false
+include_hp_tags=true
 
 [cifv3]
 cif_host = http://cifv3
