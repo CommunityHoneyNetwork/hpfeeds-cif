@@ -296,7 +296,11 @@ def conpot_events(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
         remote = dec.remote[0]
-        port = dec.remote[1]
+        remote_port = dec.remote[1]
+        if dec.local[1]:
+            local_port = dec.local[1]
+        else:
+            local_port = 0
 
         # http asks locally for snmp with remote ip = "127.0.0.1"
         if remote == "127.0.0.1":
@@ -312,15 +316,14 @@ def conpot_events(identifier, payload):
         tags=dec.tags,
         src_ip=remote,
         dst_ip=dec.public_ip,
-        src_port=port,
-        dst_port=502,
+        src_port=remote_port,
+        dst_port=local_port,
         vendor_product='Conpot',
         app='conpot',
         direction='inbound',
         ids_type='network',
         severity='medium',
         signature='Connection to Honeypot',
-
     )
 
 
