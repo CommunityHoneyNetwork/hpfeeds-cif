@@ -611,15 +611,17 @@ def uhp_events(identifier, payload):
         print 'exception processing amun event'
         traceback.print_exc()
         return
+
     return create_message(
         'uhp.events',
         identifier,
+        tags=dec.tags,
         src_ip=dec.src_ip,
         dst_ip=dec.dst_ip,
         src_port=dec.src_port,
         dst_port=dec.dst_port,
         vendor_product='UHP',
-        app='uhp',
+        app=dec.app,
         direction='inbound',
         ids_type='network',
         severity='high',
