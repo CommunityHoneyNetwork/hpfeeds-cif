@@ -1,4 +1,4 @@
-FROM ubuntu:17.10
+FROM ubuntu:18.04
 
 LABEL maintainer Alexander Merck <alexander.t.merck@gmail.com>
 LABEL maintainer Jesse Bowling <jessebowling@gmail.com>
