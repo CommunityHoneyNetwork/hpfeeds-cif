@@ -12,28 +12,29 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl, include_hp_tags=False):
-    indicator = msg['src_ip']
-    app = msg['app']
-    msg_tags = []
-    if include_hp_tags and msg['tags']:
-        msg_tags = msg['tags']
-    data = {"indicator": indicator,
-            "tlp": tlp,
-            "confidence": confidence,
-            "tags": tags + [app] + msg_tags,
-            "provider": provider,
-            "group": group,
-            "lasttime": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
-    logging.debug('Initializing Client instance with: {0}, {1}, {2}'.format(token, host, ssl))
-    cli = Client(token=token,
-                 remote=host,
-                 verify_ssl=ssl)
-    logging.info('Submitting indicator: {0}'.format(data))
-    try:
-      r = cli.indicators_create(json.dumps(data))
-      logging.debug('Indicator submitted with id {}'.format(r))
-    except Exception as e:
-      logging.error('Error submitting indicator: {0}'.format(repr(e)))
+    if msg['signature'] == 'Connection to Honeypot':
+        indicator = msg['src_ip']
+        app = msg['app']
+        msg_tags = []
+        if include_hp_tags and msg['tags']:
+            msg_tags = msg['tags']
+        data = {"indicator": indicator,
+                "tlp": tlp,
+                "confidence": confidence,
+                "tags": tags + [app] + msg_tags,
+                "provider": provider,
+                "group": group,
+                "lasttime": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
+        logging.debug('Initializing Client instance with: {0}, {1}, {2}'.format(token, host, ssl))
+        cli = Client(token=token,
+                     remote=host,
+                     verify_ssl=ssl)
+        logging.info('Submitting indicator: {0}'.format(data))
+        try:
+          r = cli.indicators_create(json.dumps(data))
+          logging.debug('Indicator submitted with id {}'.format(r))
+        except Exception as e:
+          logging.error('Error submitting indicator: {0}'.format(repr(e)))
     return
 
 
