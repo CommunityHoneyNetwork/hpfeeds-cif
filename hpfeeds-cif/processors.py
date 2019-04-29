@@ -272,7 +272,7 @@ def kippo_cowrie_sessions(identifier, payload, name, channel):
         direction='inbound',
         ids_type='network',
         severity='high',
-        signature='SSH session on {} honeypot'.format(name_lower),
+        signature='Connection to Honeypot',
         ssh_version=dec.version
     )
 
@@ -509,7 +509,7 @@ def wordpot_event(identifier, payload):
         direction='inbound',
         ids_type='network',
         severity='high',
-        signature='Wordpress Exploit, Scan, or Enumeration Attempted',
+        signature='Connection to Honeypot',
         request_url=dec.url,
     )
 
@@ -554,7 +554,7 @@ def shockpot_event(identifier, payload):
         direction='inbound',
         ids_type='network',
         severity='high',
-        signature='Shellshock Exploit Attempted',
+        signature='Connection to Honeypot',
         **kwargs
     )
 
@@ -572,7 +572,7 @@ def elastichoney_events(identifier, payload):
         signature = 'ElasticSearch Exploit Attempted'
     else:
         severity = 'medium'
-        signature = 'ElasticSearch Recon Attempted'
+        signature = 'Connection to Honeypot'
 
     user_agent = ''
     if dec.headers:

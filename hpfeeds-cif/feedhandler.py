@@ -28,10 +28,10 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl
     cli = Client(token=token,
                  remote=host,
                  verify_ssl=ssl)
-    logging.debug('Submitting indicator: {0}'.format(data))
+    logging.info('Submitting indicator: {0}'.format(data))
     try:
-      cli.indicators_create(json.dumps(data))
-      logging.debug('Indicator submitted')
+      r = cli.indicators_create(json.dumps(data))
+      logging.debug('Indicator submitted with id {}'.format(r))
     except Exception as e:
       logging.error('Error submitting indicator: {0}'.format(repr(e)))
     return
