@@ -25,17 +25,40 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl
                 "provider": provider,
                 "group": group,
                 "lasttime": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
-        logging.debug('Initializing Client instance with: {0}, {1}, {2}'.format(token, host, ssl))
-        cli = Client(token=token,
-                     remote=host,
-                     verify_ssl=ssl)
-        logging.info('Submitting indicator: {0}'.format(data))
-        try:
-          r = cli.indicators_create(json.dumps(data))
-          logging.debug('Indicator submitted with id {}'.format(r))
-        except Exception as e:
-          logging.error('Error submitting indicator: {0}'.format(repr(e)))
+        submit_to_cif(data, host, ssl, token)
+
+    if msg['signature'] == 'File downloaded on Honeypot':
+        for indicator in [ msg['md5'], msg['sha256'], msg['sha512'] ]:
+            app = msg['app']
+            msg_tags = []
+            if include_hp_tags and msg['tags']:
+                msg_tags = msg['tags']
+            data = {"indicator": indicator,
+                    "tlp": tlp,
+                    "confidence": confidence,
+                    "tags": tags + [app] + msg_tags,
+                    "provider": provider,
+                    "group": group,
+                    "lasttime": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
+            submit_to_cif(data, host, ssl, token)
+
+
     return
+
+
+def submit_to_cif(data, host, ssl, token):
+    logging.debug('Initializing Client instance with: {0}, {1}, {2}'.format(token, host, ssl))
+    cli = Client(token=token,
+                 remote=host,
+                 verify_ssl=ssl)
+    logging.info('Submitting indicator: {0}'.format(data))
+    try:
+        r = cli.indicators_create(json.dumps(data))
+        logging.debug('Indicator submitted with id {}'.format(r))
+        return True
+    except Exception as e:
+        logging.error('Error submitting indicator: {0}'.format(repr(e)))
+        return False
 
 
 def parse_config(config_file):
