@@ -12,29 +12,56 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl, include_hp_tags=False):
-    indicator = msg['src_ip']
+
+    logging.debug('Found signature: {}'.format(msg['signature']))
     app = msg['app']
     msg_tags = []
     if include_hp_tags and msg['tags']:
         msg_tags = msg['tags']
-    data = {"indicator": indicator,
-            "tlp": tlp,
+    data = {"tlp": tlp,
             "confidence": confidence,
             "tags": tags + [app] + msg_tags,
             "provider": provider,
             "group": group,
             "lasttime": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
-    logging.debug('Initializing Client instance with: {0}, {1}, {2}'.format(token, host, ssl))
+
+    if msg['signature'] == 'Connection to Honeypot':
+        indicator = msg['src_ip']
+        data['indicator'] = indicator
+        submit_to_cif(data, host, ssl, token)
+
+    if msg['signature'] == 'File downloaded on Honeypot':
+        for htype in ['md5', 'sha256', 'sha512']:
+            if htype in msg:
+                indicator = msg[htype]
+                rdata = 'Dropped by {}'.format(msg['src_ip'])
+                data['rdata'] = rdata
+                data['indicator'] = indicator
+                submit_to_cif(data, host, ssl, token)
+
+    if msg['signature'] == 'URL download attempted on Honeypot':
+        indicator = msg['url']
+        rdata = 'Dropped by {}'.format(msg['src_ip'])
+        data['rdata'] = rdata
+        data['indicator'] = indicator
+        submit_to_cif(data, host, ssl, token)
+
+    return
+
+
+def submit_to_cif(data, host, ssl, token):
+    logging.debug('Initializing Client instance to host={}, with ssl={}'.format(host, ssl))
     cli = Client(token=token,
                  remote=host,
                  verify_ssl=ssl)
-    logging.debug('Submitting indicator: {0}'.format(data))
+    logging.info('Submitting indicator: {0}'.format(data))
     try:
-      cli.indicators_create(json.dumps(data))
-      logging.debug('Indicator submitted')
+        r = cli.indicators_create(json.dumps(data))
+        logging.debug('Indicator submitted with id {}'.format(r))
+        return True
     except Exception as e:
-      logging.error('Error submitting indicator: {0}'.format(repr(e)))
-    return
+        logging.error('Error submitting indicator: {0}'.format(repr(e)))
+        return False
 
 
 def parse_config(config_file):

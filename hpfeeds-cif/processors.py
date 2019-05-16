@@ -176,7 +176,7 @@ def dionaea_capture(identifier, payload):
         direction='inbound',
         ids_type='network',
         severity='high',
-        signature='Connection to Honeypot',
+        signature='File downloaded on Honeypot',
         url=dec.url,
         md5=dec.md5,
         sha512=dec.sha512,
@@ -272,7 +272,7 @@ def kippo_cowrie_sessions(identifier, payload, name, channel):
         direction='inbound',
         ids_type='network',
         severity='high',
-        signature='SSH session on {} honeypot'.format(name_lower),
+        signature='Connection to Honeypot',
         ssh_version=dec.version
     )
 
@@ -281,7 +281,7 @@ def kippo_cowrie_sessions(identifier, payload, name, channel):
     if dec.credentials:
         for username, password in dec.credentials:
             msg = dict(base_message)
-            msg['signature'] = 'SSH login attempted on {} honeypot'.format(name_lower)
+            msg['signature'] = 'SSH login attempted on Honeypot'
             msg['ssh_username'] = username
             msg['ssh_password'] = password
             messages.append(msg)
@@ -289,22 +289,30 @@ def kippo_cowrie_sessions(identifier, payload, name, channel):
     if dec.urls:
         for url in dec.urls:
             msg = dict(base_message)
-            msg['signature'] = 'URL download attempted on {} honeypot'.format(name_lower)
+            msg['signature'] = 'URL download attempted on Honeypot'
             msg['url'] = url
             messages.append(msg)
 
     if dec.commands:
         for command in dec.commands:
             msg = dict(base_message)
-            msg['signature'] = 'command attempted on {} honeypot'.format(name_lower)
+            msg['signature'] = 'command attempted on Honeypot'
             msg['command'] = command
             messages.append(msg)
 
     if dec.unknownCommands:
         for command in dec.unknownCommands:
             msg = dict(base_message)
-            msg['signature'] = 'unknown command attempted on {} honeypot'.format(name_lower)
+            msg['signature'] = 'unknown command attempted on Honeypot'
             msg['command'] = command
+            messages.append(msg)
+
+    if dec.hashes:
+        for fhash in dec.hashes:
+            msg = dict(base_message)
+            msg['signature'] = 'File downloaded on Honeypot'
+            msg['hash'] = fhash
+            msg['sha256'] = fhash
             messages.append(msg)
 
     return messages
@@ -509,7 +517,7 @@ def wordpot_event(identifier, payload):
         direction='inbound',
         ids_type='network',
         severity='high',
-        signature='Wordpress Exploit, Scan, or Enumeration Attempted',
+        signature='Connection to Honeypot',
         request_url=dec.url,
     )
 
@@ -554,7 +562,7 @@ def shockpot_event(identifier, payload):
         direction='inbound',
         ids_type='network',
         severity='high',
-        signature='Shellshock Exploit Attempted',
+        signature='Connection to Honeypot',
         **kwargs
     )
 
@@ -572,7 +580,7 @@ def elastichoney_events(identifier, payload):
         signature = 'ElasticSearch Exploit Attempted'
     else:
         severity = 'medium'
-        signature = 'ElasticSearch Recon Attempted'
+        signature = 'Connection to Honeypot'
 
     user_agent = ''
     if dec.headers:
