@@ -747,16 +747,17 @@ class HpfeedsMessageProcessor(object):
                     for msg in message:
                         src_ip = msg.get('src_ip')
                         if not ((ignore_rfc1918 and self.is_rfc1918_addr(src_ip)) or self.is_ignore_addr(src_ip)):
-                            logging.debug('Evaluated ignore_rfc1918: {}, is_rfc1918_addr: {}, is_ignore_addr {} '
-                                          ''.format(ignore_rfc1918,self.is_rfc1918_addr(src_ip),self.is_ignore_addr(src_ip)))
                             results.append(msg)
+                        else:
+                            logging.debug('Ignored submission for {}: ignore_rfc1918: {}, is_rfc1918_addr: {}, is_ignore_addr {}'.format(src_ip, ignore_rfc1918,self.is_rfc1918_addr(src_ip),self.is_ignore_addr(src_ip)))
+                            continue
                 else:
                     src_ip = message.get('src_ip')
                     if not ((ignore_rfc1918 and self.is_rfc1918_addr(src_ip)) or self.is_ignore_addr(src_ip)):
-                        logging.debug('Evaluated ignore_rfc1918: {}, is_rfc1918_addr: {}, is_ignore_addr {} '
-                                      ''.format(ignore_rfc1918, self.is_rfc1918_addr(src_ip),
-                                                self.is_ignore_addr(src_ip)))
                         results.append(message)
+                    else:
+                        logging.debug('Ignored submission for {}: ignore_rfc1918: {}, is_rfc1918_addr: {}, is_ignore_addr {}'.format(src_ip, ignore_rfc1918, self.is_rfc1918_addr(src_ip), self.is_ignore_addr(src_ip)))
+                        continue
         if self.maxmind_geo or self.maxmind_asn:
             self.geo_intelligence_enrichment(results)
         return results
