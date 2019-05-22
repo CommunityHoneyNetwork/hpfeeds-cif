@@ -110,7 +110,7 @@ def glastopf_event(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing glastopf event'
+        print('exception processing glastopf event')
         traceback.print_exc()
         return None
 
@@ -126,7 +126,7 @@ def glastopf_event(identifier, payload):
             # best of luck!
             request_url = dec['request']['url']
     except:
-        print 'exception processing glastopf url, ignoring'
+        print('exception processing glastopf url, ignoring')
         traceback.print_exc()
 
     tags = []
@@ -155,7 +155,7 @@ def dionaea_capture(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing dionaea event'
+        print('exception processing dionaea event')
         traceback.print_exc()
         return
 
@@ -187,7 +187,7 @@ def dionaea_connections(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing dionaea connection'
+        print('exception processing dionaea connection')
         traceback.print_exc()
         return
 
@@ -217,7 +217,7 @@ def beeswarm_hive(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing beeswarm.hive event'
+        print('exception processing beeswarm.hive event')
         traceback.print_exc()
         return
     return create_message(
@@ -249,7 +249,7 @@ def kippo_cowrie_sessions(identifier, payload, name, channel):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing {} event'.format(name_lower)
+        print('exception processing {} event'.format(name_lower))
         traceback.print_exc()
         return
 
@@ -332,7 +332,7 @@ def conpot_events(identifier, payload):
         if remote == "127.0.0.1":
             return
     except:
-        print 'exception processing conpot event'
+        print('exception processing conpot event')
         traceback.print_exc()
         return
 
@@ -361,7 +361,7 @@ def snort_alerts(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing snort alert'
+        print('exception processing snort alert')
         traceback.print_exc()
         return None
 
@@ -401,7 +401,7 @@ def suricata_events(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing suricata event'
+        print('exception processing suricata event')
         traceback.print_exc()
         return None
 
@@ -440,7 +440,7 @@ def p0f_events(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing suricata event'
+        print('exception processing suricata event')
         traceback.print_exc()
         return None
     return create_message(
@@ -467,7 +467,7 @@ def amun_events(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing amun event'
+        print('exception processing amun event')
         traceback.print_exc()
         return
 
@@ -496,7 +496,7 @@ def wordpot_event(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing wordpot alert'
+        print('exception processing wordpot alert')
         traceback.print_exc()
         return
 
@@ -526,7 +526,7 @@ def shockpot_event(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing shockpot alert'
+        print('exception processing shockpot alert')
         traceback.print_exc()
         return None
 
@@ -571,7 +571,7 @@ def elastichoney_events(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing elastichoney alert'
+        print('exception processing elastichoney alert')
         traceback.print_exc()
         return
 
@@ -621,7 +621,7 @@ def rdphoney_sessions(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing amun event'
+        print('exception processing amun event')
         traceback.print_exc()
         return
 
@@ -652,7 +652,7 @@ def uhp_events(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        print 'exception processing amun event'
+        print('exception processing amun event')
         traceback.print_exc()
         return
 
@@ -700,9 +700,18 @@ PROCESSORS = {
 
 
 class HpfeedsMessageProcessor(object):
-    def __init__(self, maxmind_geo_file=None, maxmind_asn_file=None):
+    def __init__(self, maxmind_geo_file=None, maxmind_asn_file=None, ignore_cidr_list=list()):
         self.maxmind_geo = None
         self.maxmind_asn = None
+        self.ignore_cidr_list=ignore_cidr_list
+
+    def is_ignore_addr(self,ip):
+        try:
+            checkip = IP(ip)
+            return True if checkip in self.ignore_cidr_list else False
+        except ValueError as e:
+            print('Received invalid IP via hpfeeds: {}'.format(e))
+            return True
 
     @staticmethod
     def is_rfc1918_addr(ip):
@@ -730,10 +739,12 @@ class HpfeedsMessageProcessor(object):
             if message:
                 if isinstance(message, list):
                     for msg in message:
-                        if not (ignore_rfc1918 and self.is_rfc1918_addr(msg.get('src_ip'))):
+                        src_ip = msg.get('src_ip')
+                        if not ((ignore_rfc1918 and self.is_rfc1918_addr(src_ip)) or self.is_ignore_addr(src_ip)):
                             results.append(msg)
                 else:
-                    if not (ignore_rfc1918 and self.is_rfc1918_addr(message.get('src_ip'))):
+                    src_ip = message.get('src_ip')
+                    if not ((ignore_rfc1918 and self.is_rfc1918_addr(src_ip)) or self.is_ignore_addr(src_ip)):
                         results.append(message)
         if self.maxmind_geo or self.maxmind_asn:
             self.geo_intelligence_enrichment(results)

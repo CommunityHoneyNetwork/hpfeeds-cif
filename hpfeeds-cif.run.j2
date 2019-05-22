@@ -33,6 +33,7 @@ then
     sed -i "s/cif_group *=.*/cif_group = ${CIF_GROUP}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
     sed -i "s/cif_verify_ssl *=.*/cif_verify_ssl = ${CIF_VERIFY_SSL}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
     sed -i "s/include_hp_tags *=.*/include_hp_tags = ${INCLUDE_HP_TAGS:-False}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+    sed -i "s/ignore_cidr *=.*/ignore_cidr = ${IGNORE_CIDR}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
 
     # Generate config file for hpfeeds broker and register
     cd {{ hpfeeds_dir }}/hpfeeds/broker/

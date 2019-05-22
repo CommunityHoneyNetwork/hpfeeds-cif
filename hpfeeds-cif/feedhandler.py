@@ -7,8 +7,27 @@ from ConfigParser import ConfigParser
 import processors
 from cifsdk.client.http import HTTP as Client
 import logging
+from IPy import IP
 
 logging.basicConfig(level=logging.DEBUG)
+
+
+def parse_ignore_cidr_option(cidrlist):
+    '''
+    Given a comma-seperated list of CIDR addresses, split them and validate they're valid CIDR notation
+    :param cidrlist: string representing a comma seperated list of CIDR addresses
+    :return: a list containing IPy.IP objects representing the ignore_cidr addresses
+    '''
+    l = list()
+    for c in cidrlist.split(','):
+        try:
+            s = c.strip(' ')
+            i = IP(s)
+            l.append(i)
+        except ValueError as e:
+            logging.warn('Received invalid CIDR in ignore_cidr: {}'.format(e))
+    return l
+
 
 
 def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl, include_hp_tags=False):
@@ -80,6 +99,7 @@ def parse_config(config_file):
     config['hpf_host'] = parser.get('hpfeeds', 'hp_host')
     config['ignore_rfc1918'] = parser.getboolean('hpfeeds', 'ignore_rfc1918')
     config['include_hp_tags'] = parser.getboolean('hpfeeds', 'include_hp_tags')
+    config['ignore_cidr'] = parser.get('hpfeeds', 'ignore_cidr')
 
     config['cif_token'] = parser.get('cifv3', 'cif_token')
     config['cif_host'] = parser.get('cifv3', 'cif_host')
@@ -115,11 +135,13 @@ def main():
     cif_group = config['cif_group']
     cif_verify_ssl = config['cif_verify_ssl']
 
-    processor = processors.HpfeedsMessageProcessor()
+    ignore_cidr_l = parse_ignore_cidr_option(config['ignore_cidr'])
+
+    processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
     logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
     try:
         hpc = hpfeeds.new(host, port, ident, secret)
-    except hpfeeds.FeedException, e:
+    except hpfeeds.FeedException as e:
         logging.error('Experienced FeedException: {0}'.format(repr(e)))
         return 1
 
