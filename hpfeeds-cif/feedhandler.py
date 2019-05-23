@@ -7,8 +7,27 @@ from ConfigParser import ConfigParser
 import processors
 from cifsdk.client.http import HTTP as Client
 import logging
+from IPy import IP
 
 logging.basicConfig(level=logging.DEBUG)
+
+
+def parse_ignore_cidr_option(cidrlist):
+    '''
+    Given a comma-seperated list of CIDR addresses, split them and validate they're valid CIDR notation
+    :param cidrlist: string representing a comma seperated list of CIDR addresses
+    :return: a list containing IPy.IP objects representing the ignore_cidr addresses
+    '''
+    l = list()
+    for c in cidrlist.split(','):
+        try:
+            s = c.strip(' ')
+            i = IP(s)
+            l.append(i)
+        except ValueError as e:
+            logging.warn('Received invalid CIDR in ignore_cidr: {}'.format(e))
+    return l
+
 
 
 def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl, include_hp_tags=False):
@@ -78,8 +97,8 @@ def parse_config(config_file):
     config['hpf_secret'] = parser.get('hpfeeds', 'secret')
     config['hpf_port'] = parser.getint('hpfeeds', 'hp_port')
     config['hpf_host'] = parser.get('hpfeeds', 'hp_host')
-    config['ignore_rfc1918'] = parser.getboolean('hpfeeds', 'ignore_rfc1918')
     config['include_hp_tags'] = parser.getboolean('hpfeeds', 'include_hp_tags')
+    config['ignore_cidr'] = parser.get('hpfeeds', 'ignore_cidr')
 
     config['cif_token'] = parser.get('cifv3', 'cif_token')
     config['cif_host'] = parser.get('cifv3', 'cif_host')
@@ -104,8 +123,9 @@ def main():
     channels = [c.encode('utf-8') for c in config['hpf_feeds']]
     ident = config['hpf_ident'].encode('utf-8')
     secret = config['hpf_secret'].encode('utf-8')
-    ignore_rfc1918 = config['ignore_rfc1918']
     include_hp_tags = config['include_hp_tags']
+    ignore_cidr_l = parse_ignore_cidr_option(config['ignore_cidr'])
+
     cif_token = config['cif_token']
     cif_host = config['cif_host']
     cif_provider = config['cif_provider']
@@ -115,16 +135,16 @@ def main():
     cif_group = config['cif_group']
     cif_verify_ssl = config['cif_verify_ssl']
 
-    processor = processors.HpfeedsMessageProcessor()
+    processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
     logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
     try:
         hpc = hpfeeds.new(host, port, ident, secret)
-    except hpfeeds.FeedException, e:
+    except hpfeeds.FeedException as e:
         logging.error('Experienced FeedException: {0}'.format(repr(e)))
         return 1
 
     def on_message(identifier, channel, payload):
-        for msg in processor.process(identifier, channel, payload, ignore_errors=True, ignore_rfc1918=ignore_rfc1918):
+        for msg in processor.process(identifier, channel, payload, ignore_errors=True):
             handle_message(msg, cif_host, cif_token, cif_provider, cif_tlp, cif_confidence,
                            cif_tags, cif_group, cif_verify_ssl, include_hp_tags)
 

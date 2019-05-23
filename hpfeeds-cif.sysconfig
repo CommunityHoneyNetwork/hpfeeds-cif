@@ -20,7 +20,9 @@ CIF_TAGS='honeypot'
 CIF_GROUP='everyone'
 CIF_VERIFY_SSL=False
 
-IGNORE_RFC1918=True
+# Specify CIDR networks for which we should NOT submit CIF indicators
+# Useful for not reporting any locally compromised hosts and prepopulated with RFC1918 addresses
+IGNORE_CIDR="192.168.0.0/16,10.0.0.0/8,172.16.0.0/12"
 
 # Include the honeypot specific tags in CIFv3
-INCLUDE_HP_TAGS=True
+INCLUDE_HP_TAGS=False
