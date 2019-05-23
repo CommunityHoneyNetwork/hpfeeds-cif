@@ -719,10 +719,6 @@ class HpfeedsMessageProcessor(object):
             logging.warn('Received invalid IP via hpfeeds: {}'.format(e))
             return True
 
-    @staticmethod
-    def is_rfc1918_addr(ip):
-        return False if (IP(ip).iptype() == "PUBLIC") else True
-
     def geo_intelligence_enrichment(self, messages):
         for message in messages:
             src_geo = geo_intel(self.maxmind_geo, self.maxmind_asn, message.get('src_ip'), prefix='src_')
@@ -730,7 +726,7 @@ class HpfeedsMessageProcessor(object):
             dst_geo = geo_intel(self.maxmind_geo, self.maxmind_asn, message.get('dest_ip'), prefix='dest_')
             message.update(dst_geo)
 
-    def process(self, identifier, channel, payload, ignore_errors=False, ignore_rfc1918=False):
+    def process(self, identifier, channel, payload, ignore_errors=False):
         procs = PROCESSORS.get(channel, [])
         results = []
         for processor in procs:
@@ -746,18 +742,19 @@ class HpfeedsMessageProcessor(object):
                 if isinstance(message, list):
                     for msg in message:
                         src_ip = msg.get('src_ip')
-                        if not ((ignore_rfc1918 and self.is_rfc1918_addr(src_ip)) or self.is_ignore_addr(src_ip)):
-                            results.append(msg)
-                        else:
-                            logging.debug('Ignored submission for {}: ignore_rfc1918: {}, is_rfc1918_addr: {}, is_ignore_addr {}'.format(src_ip, ignore_rfc1918,self.is_rfc1918_addr(src_ip),self.is_ignore_addr(src_ip)))
+                        if self.is_ignore_addr(src_ip):
+                            logging.debug('Ignored submission for {}: ignore_cidr_list: {}'.format(src_ip,self.ignore_cidr_list))
                             continue
+                        else:
+                            results.append(msg)
                 else:
                     src_ip = message.get('src_ip')
-                    if not ((ignore_rfc1918 and self.is_rfc1918_addr(src_ip)) or self.is_ignore_addr(src_ip)):
-                        results.append(message)
-                    else:
-                        logging.debug('Ignored submission for {}: ignore_rfc1918: {}, is_rfc1918_addr: {}, is_ignore_addr {}'.format(src_ip, ignore_rfc1918, self.is_rfc1918_addr(src_ip), self.is_ignore_addr(src_ip)))
+                    if self.is_ignore_addr(src_ip):
+                        logging.debug('Ignored submission for {}: ignore_cidr_list: {}'.format(src_ip, self.ignore_cidr_list))
                         continue
+                    else:
+                        results.append(message)
+
         if self.maxmind_geo or self.maxmind_asn:
             self.geo_intelligence_enrichment(results)
         return results
