@@ -8,6 +8,7 @@ import processors
 from cifsdk.client.http import HTTP as Client
 import logging
 from IPy import IP
+import validators
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -32,6 +33,12 @@ class RedisCache(object):
     def setcache(self,ip):
         a = self.r.set(name=ip, value=0, ex=self.expire_t)
         logging.debug('Sent {} to cache and received: {}'.format(ip,a))
+
+def validate_url(url):
+    if validators.url(url):
+        return True
+    else:
+        return False
 
 def parse_ignore_cidr_option(cidrlist):
     '''
@@ -87,6 +94,9 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl
 
     if msg['signature'] == 'URL download attempted on Honeypot':
         indicator = msg['url']
+        if not validate_url(indicator):
+            logging.info('Found URL appears invalid: {}'.format(indicator))
+            return
         if cache.iscached(indicator):
             logging.info('Skipped submitting {} due to cache hit'.format(indicator))
             return
