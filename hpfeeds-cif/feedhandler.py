@@ -11,6 +11,27 @@ from IPy import IP
 
 logging.basicConfig(level=logging.DEBUG)
 
+class RedisCache(object):
+    '''
+    Implement a simple cache using Redis.
+    '''
+    def __init__(self):
+        # This code will have implication of no more than one instance of BHR
+        # In case of multiples, false cache hits will result due to db selected
+        self.r = redis.Redis(host='redis', port=6379, db=1)
+        self.expire_t = 60
+
+    def iscached(self,ip):
+        a = self.r.get(ip)
+        logging.debug('Checked for {} in cache and received: {}'.format(ip,a))
+        if a:
+            return True
+        else:
+            return False
+
+    def setcache(self,ip):
+        a = self.r.set(name=ip, value=0, ex=self.expire_t)
+        logging.debug('Sent {} to cache and received: {}'.format(ip,a))
 
 def parse_ignore_cidr_option(cidrlist):
     '''
@@ -30,7 +51,7 @@ def parse_ignore_cidr_option(cidrlist):
 
 
 
-def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl, include_hp_tags=False):
+def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl, cache, include_hp_tags=False):
 
     logging.debug('Found signature: {}'.format(msg['signature']))
     app = msg['app']
@@ -46,29 +67,38 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl
 
     if msg['signature'] == 'Connection to Honeypot':
         indicator = msg['src_ip']
+        if cache.iscached(indicator):
+            logging.info('Skipped submitting {} due to cache hit'.format(indicator))
+            return
         data['indicator'] = indicator
-        submit_to_cif(data, host, ssl, token)
+        submit_to_cif(data, host, ssl, token, cache)
 
     if msg['signature'] == 'File downloaded on Honeypot':
         for htype in ['md5', 'sha256', 'sha512']:
             if htype in msg:
                 indicator = msg[htype]
+                if cache.iscached(indicator):
+                    logging.info('Skipped submitting {} due to cache hit'.format(indicator))
+                    return
                 rdata = 'Dropped by {}'.format(msg['src_ip'])
                 data['rdata'] = rdata
                 data['indicator'] = indicator
-                submit_to_cif(data, host, ssl, token)
+                submit_to_cif(data, host, ssl, token, cache )
 
     if msg['signature'] == 'URL download attempted on Honeypot':
         indicator = msg['url']
+        if cache.iscached(indicator):
+            logging.info('Skipped submitting {} due to cache hit'.format(indicator))
+            return
         rdata = 'Dropped by {}'.format(msg['src_ip'])
         data['rdata'] = rdata
         data['indicator'] = indicator
-        submit_to_cif(data, host, ssl, token)
+        submit_to_cif(data, host, ssl, token, cache)
 
     return
 
 
-def submit_to_cif(data, host, ssl, token):
+def submit_to_cif(data, host, ssl, token, cache):
     logging.debug('Initializing Client instance to host={}, with ssl={}'.format(host, ssl))
     cli = Client(token=token,
                  remote=host,
@@ -76,6 +106,7 @@ def submit_to_cif(data, host, ssl, token):
     logging.info('Submitting indicator: {0}'.format(data))
     try:
         r = cli.indicators_create(json.dumps(data))
+        cache.setcache(data['indicator'])
         logging.debug('Indicator submitted with id {}'.format(r))
         return True
     except Exception as e:
@@ -135,6 +166,7 @@ def main():
     cif_group = config['cif_group']
     cif_verify_ssl = config['cif_verify_ssl']
 
+    cache = RedisCache()
     processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
     logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
     try:
@@ -145,8 +177,8 @@ def main():
 
     def on_message(identifier, channel, payload):
         for msg in processor.process(identifier, channel, payload, ignore_errors=True):
-            handle_message(msg, cif_host, cif_token, cif_provider, cif_tlp, cif_confidence,
-                           cif_tags, cif_group, cif_verify_ssl, include_hp_tags)
+            handle_message(msg, cif_host, cif_token, cif_provider, cif_tlp, cif_confidence, cif_tags, cif_group,
+                           cif_verify_ssl, cache, include_hp_tags)
 
     def on_error(payload):
         sys.stderr.write("Handling error.")
