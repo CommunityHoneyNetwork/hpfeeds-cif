@@ -7,7 +7,8 @@ import re
 from IPy import IP
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+log_format = '%(asctime)s - %(levelname)s::%(message)s'
+logging.basicConfig(level=logging.DEBUG, format=log_format)
 
 IPV6_REGEX = re.compile(r'::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')
 
