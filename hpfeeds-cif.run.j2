@@ -31,21 +31,21 @@ then
 
     sed -i "s/ident *=.*/ident = ${IDENT}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
     sed -i "s/secret *=.*/secret = ${SECRET}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/hp_host *=.*/hp_host = ${HPFEEDS_HOST}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/hp_port *=.*/hp_port = ${HPFEEDS_PORT}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
     sed -i "s/channels *=.*/channels = ${CHANNELS}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s%cif_host *=.*%cif_host = ${CIF_HOST}%g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/cif_token *=.*/cif_token = ${CIF_TOKEN}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/cif_provider *=.*/cif_provider = ${CIF_PROVIDER}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/cif_tlp *=.*/cif_tlp = ${CIF_TLP}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/cif_confidence *=.*/cif_confidence = ${CIF_CONFIDENCE}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/cif_tags *=.*/cif_tags = ${CIF_TAGS}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/cif_group *=.*/cif_group = ${CIF_GROUP}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/cif_verify_ssl *=.*/cif_verify_ssl = ${CIF_VERIFY_SSL}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s/include_hp_tags *=.*/include_hp_tags = ${INCLUDE_HP_TAGS:-False}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-    sed -i "s%ignore_cidr *=.*%ignore_cidr = ${IGNORE_CIDR}%g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
-
 fi
+
+sed -i "s/hp_host *=.*/hp_host = ${HPFEEDS_HOST}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s/hp_port *=.*/hp_port = ${HPFEEDS_PORT}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s%cif_host *=.*%cif_host = ${CIF_HOST}%g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s/cif_token *=.*/cif_token = ${CIF_TOKEN}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s/cif_provider *=.*/cif_provider = ${CIF_PROVIDER}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s/cif_tlp *=.*/cif_tlp = ${CIF_TLP}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s/cif_confidence *=.*/cif_confidence = ${CIF_CONFIDENCE}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s/cif_tags *=.*/cif_tags = ${CIF_TAGS}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s/cif_group *=.*/cif_group = ${CIF_GROUP}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s/cif_verify_ssl *=.*/cif_verify_ssl = ${CIF_VERIFY_SSL}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s/include_hp_tags *=.*/include_hp_tags = ${INCLUDE_HP_TAGS:-False}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s%ignore_cidr *=.*%ignore_cidr = ${IGNORE_CIDR}%g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
 
 cd {{ hpfeeds_cif_dir }}
 echo "Starting hpfeeds cif..."
