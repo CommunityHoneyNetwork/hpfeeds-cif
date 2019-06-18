@@ -48,5 +48,17 @@ sed -i "s/include_hp_tags *=.*/include_hp_tags = ${INCLUDE_HP_TAGS:-False}/g" {{
 sed -i "s%ignore_cidr *=.*%ignore_cidr = ${IGNORE_CIDR}%g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
 
 cd {{ hpfeeds_cif_dir }}
+echo "Testing CIF host and key..."
+touch /root/.cif.yml
+cif --ping --token ${CIF_TOKEN} --remote ${CIF_HOST} --no-verify-ssl 2>/dev/null
+if [[ $? -ne 0 ]]
+then
+    echo "Authorization failed; please verify CIF_HOST and CIF_TOKEN, then restart the container."
+    echo "CIF_HOST=${CIF_HOST}"
+    echo "CIF_TOKEN=${CIF_TOKEN}"
+    sleep 86400
+else
+    echo "Successfully pinged CIF host with token"
+fi
 echo "Starting hpfeeds cif..."
 exec /usr/bin/env python {{ hpfeeds_cif_dir }}/hpfeeds-cif/feedhandler.py {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
