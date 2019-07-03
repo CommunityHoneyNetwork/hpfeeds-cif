@@ -6,6 +6,7 @@ import hpfeeds
 from ConfigParser import ConfigParser
 import processors
 from cifsdk.client.http import HTTP as Client
+from cifsdk.exceptions import SubmissionFailed
 import logging
 from IPy import IP
 import redis
@@ -121,9 +122,14 @@ def submit_to_cif(data, host, ssl, token, cache):
         cache.setcache(data['indicator'])
         logging.debug('Indicator submitted with id {}'.format(r))
         return True
-    except Exception as e:
-        logging.error('Error submitting indicator: {0}'.format(repr(e)))
-        return False
+    except (SubmissionFailed, Exception) as e:
+        if isinstance(e, SubmissionFailed):
+            logging.error(
+                'Submission failed due to authorization error; please correct your host/key, remove this container, and try again')
+            return False
+        else:
+            logging.error('Error submitting indicator: {} {}'.format(type(e).__name__, e.args))
+            return False
 
 
 def parse_config(config_file):
