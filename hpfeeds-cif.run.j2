@@ -50,7 +50,7 @@ sed -i "s%ignore_cidr *=.*%ignore_cidr = ${IGNORE_CIDR}%g" {{ hpfeeds_cif_dir }}
 cd {{ hpfeeds_cif_dir }}
 echo "Testing CIF host and key..."
 touch /root/.cif.yml
-cif --ping --token ${CIF_TOKEN} --remote ${CIF_HOST} --no-verify-ssl 2>/dev/null
+cif --ping-write --token ${CIF_TOKEN} --remote ${CIF_HOST} --no-verify-ssl 2>/dev/null
 if [[ $? -ne 0 ]]
 then
     echo "Authorization failed; please verify CIF_HOST and CIF_TOKEN, then restart the container."
