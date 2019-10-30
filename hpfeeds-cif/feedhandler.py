@@ -158,6 +158,8 @@ def parse_config(config_file):
     config['cif_group'] = parser.get('cifv3', 'cif_group')
     config['cif_verify_ssl'] = parser.getboolean('cifv3', 'cif_verify_ssl')
 
+    config['cif_cache_db'] = parser.getint('cifv3', 'cif_cache_db')
+
     logging.debug('Parsed config: {0}'.format(repr(config)))
     return config
 
@@ -184,7 +186,9 @@ def main():
     cif_group = config['cif_group']
     cif_verify_ssl = config['cif_verify_ssl']
 
-    cache = RedisCache()
+    cif_cache_db = config['cif_cache_db']
+
+    cache = RedisCache(db=cif_cache_db)
     processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
     logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
     try:
