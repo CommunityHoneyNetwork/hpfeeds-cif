@@ -17,3 +17,4 @@ cif_tags = honeypot
 cif_group = everyone
 cif_verify_ssl = False
 cif_cache_db = 2
+cif_cache_expire = 300

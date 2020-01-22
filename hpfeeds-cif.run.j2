@@ -48,6 +48,7 @@ sed -i "s/include_hp_tags *=.*/include_hp_tags = ${INCLUDE_HP_TAGS:-False}/g" {{
 sed -i "s%ignore_cidr *=.*%ignore_cidr = ${IGNORE_CIDR}%g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
 
 sed -i "s/cif_cache_db *=.*/cif_cache_db = ${CIF_CACHE_DB:-2}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
+sed -i "s/cif_cache_expire *=.*/cif_cache_expire = ${CIF_CACHE_EXPIRE:-300}/g" {{ hpfeeds_cif_dir }}/hpfeeds-cif.cfg
 
 cd {{ hpfeeds_cif_dir }}
 echo "Testing CIF host and key..."
@@ -58,7 +59,7 @@ then
     echo "Authorization failed; please verify CIF_HOST and CIF_TOKEN, then restart the container."
     echo "CIF_HOST=${CIF_HOST}"
     echo "CIF_TOKEN=${CIF_TOKEN}"
-    sleep 300
+    sleep 120
     exit 1
 else
     echo "Successfully pinged CIF host with token"

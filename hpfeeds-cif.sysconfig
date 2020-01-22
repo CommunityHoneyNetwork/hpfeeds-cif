@@ -28,4 +28,7 @@ INCLUDE_HP_TAGS=False
 # ADVANCED: Specify the Redis database number to use for caching CIF submissions. This is only necessary when
 # running multiple CIF containers on the same host submitting to different instances. Note that hpfeeds-bhr defaults
 # to using database 1 and hpfeeds-cif defaults to using database 2, so generally safe choices are in the range of 3-15.
+#
+# The CIF_CACHE_EXPIRE variable specifies how many seconds to cache an IP before re-submitting it to the CIF instance.
 # CIF_CACHE_DB=2
+# CIF_CACHE_EXPIRE=300
