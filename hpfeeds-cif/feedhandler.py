@@ -159,6 +159,7 @@ def parse_config(config_file):
     config['cif_verify_ssl'] = parser.getboolean('cifv3', 'cif_verify_ssl')
 
     config['cif_cache_db'] = parser.getint('cifv3', 'cif_cache_db')
+    config['cif_cache_expire'] = parser.getint('cifv3', 'cif_cache_expire')
 
     logging.debug('Parsed config: {0}'.format(repr(config)))
     return config
