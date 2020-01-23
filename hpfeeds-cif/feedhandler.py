@@ -19,11 +19,11 @@ class RedisCache(object):
     Implement a simple cache using Redis.
     '''
 
-    def __init__(self, host='redis', port=6379, db=2):
+    def __init__(self, host='redis', port=6379, db=2, expire=300):
         # This code will have implication of no more than one instance of BHR
         # In case of multiples, false cache hits will result due to db selected
         self.r = redis.Redis(host=host, port=port, db=db)
-        self.expire_t = 60
+        self.expire_t = expire
 
     def iscached(self,ip):
         a = self.r.get(ip)
@@ -159,6 +159,7 @@ def parse_config(config_file):
     config['cif_verify_ssl'] = parser.getboolean('cifv3', 'cif_verify_ssl')
 
     config['cif_cache_db'] = parser.getint('cifv3', 'cif_cache_db')
+    config['cif_cache_expire'] = parser.getint('cifv3', 'cif_cache_expire')
 
     logging.debug('Parsed config: {0}'.format(repr(config)))
     return config
@@ -187,8 +188,9 @@ def main():
     cif_verify_ssl = config['cif_verify_ssl']
 
     cif_cache_db = config['cif_cache_db']
+    cif_cache_expire = config['cif_cache_expire']
 
-    cache = RedisCache(db=cif_cache_db)
+    cache = RedisCache(db=cif_cache_db, expire=cif_cache_expire)
     processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
     logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
     try:
