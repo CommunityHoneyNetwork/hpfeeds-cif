@@ -3,7 +3,7 @@ ident =
 secret =
 hp_host = localhost
 hp_port = 20000
-channels = amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,thug.files,beeswarn.feeder,cuckoo.analysis,kippo.sessions,cowrie.sessions,glastopf.events,glastopf.files,mwbinary.dionaea.sensorunique,wordpot.events,shockpot.events,p0f.events,suricata.events,elastichoney.events,rdphoney.sessions,uhp.events
+channels = amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,thug.files,beeswarm.feeder,cuckoo.analysis,kippo.sessions,cowrie.sessions,glastopf.events,glastopf.files,mwbinary.dionaea.sensorunique,wordpot.events,shockpot.events,p0f.events,suricata.events,elastichoney.events,rdphoney.sessions,uhp.events
 include_hp_tags = true
 ignore_cidr = 10.0.0.0/8
 
