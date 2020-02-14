@@ -18,7 +18,7 @@ def main():
     IDENT = os.environ.get("IDENT", "")
     SECRET = os.environ.get("SECRET", "")
     CHANNELS = os.environ.get("CHANNELS", "amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,dionaea.connections,thug.files,beeswarm.feeder,cuckoo.analysis,kippo.sessions,cowrie.sessions,glastopf.events,glastopf.files,mwbinary.dionaea.sensorunique,snort.alerts,wordpot.events,p0f.events,suricata.events,shockpot.events,elastichoney.events,rdphoney.sessions,uhp.events")
-    CIF_HOST = os.environ.get("CIF_HOST", "https://public-cif-stingar.security.duke.edu")
+    CIF_HOST = os.environ.get("CIF_HOST", "")
     CIF_TOKEN = os.environ.get("CIF_TOKEN", "")
     CIF_PROVIDER = os.environ.get("CIF_PROVIDER", "")
     CIF_TLP = os.environ.get("CIF_TLP", "")
