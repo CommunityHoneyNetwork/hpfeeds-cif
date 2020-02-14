@@ -1,6 +1,6 @@
 import json
 import traceback
-import urlparse
+from urllib.parse import urlparse
 import socket
 import hashlib
 import re
@@ -253,8 +253,8 @@ def kippo_cowrie_sessions(identifier, payload, name, channel):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing {} event'.format(name_lower))
-        traceback.print_exc()
+        logging.warning('exception processing {} event'.format(name_lower))
+        logging.warning(traceback.print_exc())
         return
 
     messages = []
@@ -544,7 +544,7 @@ def shockpot_event(identifier, payload):
             kwargs.update(m.groupdict())
 
     try:
-        p = urlparse.urlparse(dec.url)
+        p = urlparse(dec.url)
         host = p.netloc.split(':')[0]
         socket.inet_aton(host)
         dest_ip = host
