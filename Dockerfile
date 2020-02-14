@@ -10,13 +10,14 @@ LABEL description "HPFeeds CIFv3 handler is a tool for generating CIFv3 entries 
 LABEL authoritative-source-url "https://github.com/CommunityHoneyNetwork/hpfeeds-cif"
 LABEL changelog-url "https://github.com/CommunityHoneyNetwork/hpfeeds-cif/commits/master"
 
-ENV playbook "hpfeeds-cif.yml"
 
-RUN apt-get update \
-       && apt-get install -y ansible
+COPY requirements.txt /opt/requirements.txt
 
-RUN echo "localhost ansible_connection=local" >> /etc/ansible/hosts
+RUN apt-get update && apt-get install -y gcc git mongodb python3-dev python3-pip runit
+RUN pip3 install -r /opt/requirements.txt
+RUN pip3 install git+https://github.com/CommunityHoneyNetwork/hpfeeds3.git
+
 ADD . /opt/
-RUN ansible-playbook /opt/${playbook}
+RUN chmod 755 /opt/entrypoint.sh
 
-ENTRYPOINT ["/usr/bin/runsvdir", "-P", "/etc/service"]
+ENTRYPOINT ["/opt/entrypoint.sh"]
