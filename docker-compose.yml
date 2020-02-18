@@ -1,8 +1,14 @@
 version: '2'
 services:
-  ubuntu:
+  redis:
+    image: stingar/redis:1.8
+  mongodb:
+    image: stingar/mongodb:1.8
+  hpfeeds-cif:
     build:
       context: .
     image: hpfeeds-cif:ubuntu
-    volumes:
-      - ./hpfeeds-cif.sysconfig:/etc/default/hpfeeds-cif:z
+    env_file:
+      - hpfeeds-cif.env
+    links:
+      - redis
