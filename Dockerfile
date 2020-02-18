@@ -1,15 +1,13 @@
 FROM ubuntu:18.04
 
-LABEL maintainer Alexander Merck <alexander.t.merck@gmail.com>
-LABEL maintainer Jesse Bowling <jessebowling@gmail.com>
+LABEL maintainer Team STINGAR <team-stingar@duke.edu>
 LABEL name "hpfeeds-cif"
-LABEL version "0.2"
+LABEL version "1.9"
 LABEL release "1"
 LABEL summary "HPFeeds CIFv3 handler"
 LABEL description "HPFeeds CIFv3 handler is a tool for generating CIFv3 entries for honeypot events."
 LABEL authoritative-source-url "https://github.com/CommunityHoneyNetwork/hpfeeds-cif"
 LABEL changelog-url "https://github.com/CommunityHoneyNetwork/hpfeeds-cif/commits/master"
-
 
 COPY requirements.txt /opt/requirements.txt
 
