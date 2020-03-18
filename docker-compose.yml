@@ -11,4 +11,5 @@ services:
     env_file:
       - hpfeeds-cif.env
     links:
-      - redis
+      - redis:redis
+      - mongodb:mongodb
