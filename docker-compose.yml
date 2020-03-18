@@ -7,7 +7,7 @@ services:
   hpfeeds-cif:
     build:
       context: .
-    image: hpfeeds-cif:ubuntu
+    image: hpfeeds-cif:latest
     env_file:
       - hpfeeds-cif.env
     links:
