@@ -1,9 +1,9 @@
-version: '2'
+version: '3'
 services:
   redis:
-    image: stingar/redis:1.8
+    image: redis:alpine
   mongodb:
-    image: stingar/mongodb:1.8
+    image: mongo:3.4.24-xenial
   hpfeeds-cif:
     build:
       context: .
