@@ -92,7 +92,11 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl
             if htype in msg:
                 logging.debug('Found a valid hash type: {}'.format(htype))
                 try:
+                    logging.debug('Processing msg: {}'.format(msg))
                     indicator = msg[htype]
+                    if not indicator:
+                        logging.warning('No hash provided with signature for file downloaded!')
+                        return
                 except Exception as e:
                     logging.warning('Exception while accessing htype message: {}'.format(e))
                 if cache.iscached(indicator):
