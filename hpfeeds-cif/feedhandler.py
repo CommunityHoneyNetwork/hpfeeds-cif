@@ -78,6 +78,7 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl
             "lasttime": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
 
     if msg['signature'] == 'Connection to Honeypot':
+        logging.debug('Processing connection to honeypot...')
         indicator = msg['src_ip']
         if cache.iscached(indicator):
             logging.info('Skipped submitting {} due to cache hit'.format(indicator))
@@ -86,8 +87,10 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl
         submit_to_cif(data, host, ssl, token, cache)
 
     if msg['signature'] == 'File downloaded on Honeypot':
+        logging.debug('Processing file downloaded on honeypot...')
         for htype in ['md5', 'sha256', 'sha512']:
             if htype in msg:
+                logging.debug('Found a valid hash type: {}'.format(htype))
                 indicator = msg[htype]
                 if cache.iscached(indicator):
                     logging.info('Skipped submitting {} due to cache hit'.format(indicator))
@@ -98,6 +101,7 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl
                 submit_to_cif(data, host, ssl, token, cache)
 
     if msg['signature'] == 'URL download attempted on Honeypot':
+        logging.debug('Processing URL download attempted on honeypot...')
         indicator = msg['url']
         if not validate_url(indicator):
             logging.info('Found URL appears invalid: {}'.format(indicator))
