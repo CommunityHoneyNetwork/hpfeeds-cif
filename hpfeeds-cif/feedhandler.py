@@ -91,7 +91,10 @@ def handle_message(msg, host, token, provider, tlp, confidence, tags, group, ssl
         for htype in ['md5', 'sha256', 'sha512']:
             if htype in msg:
                 logging.debug('Found a valid hash type: {}'.format(htype))
-                indicator = msg[htype]
+                try:
+                    indicator = msg[htype]
+                except Exception as e:
+                    logging.warning('Exception while accessing htype message: {}'.format(e))
                 if cache.iscached(indicator):
                     logging.info('Skipped submitting {} due to cache hit'.format(indicator))
                     return
