@@ -10,6 +10,7 @@ LABEL authoritative-source-url "https://github.com/CommunityHoneyNetwork/hpfeeds
 LABEL changelog-url "https://github.com/CommunityHoneyNetwork/hpfeeds-cif/commits/master"
 
 ENV DEBIAN_FRONTEND "noninteractive"
+# hadolint ignore=DL3008,DL3005
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y gcc git python3-dev python3-pip
 
