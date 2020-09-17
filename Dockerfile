@@ -14,14 +14,13 @@ ENV DEBIAN_FRONTEND "noninteractive"
 # hadolint ignore=DL3008,DL3005
 RUN apt-get update \
   && apt-get upgrade -y \
-  && apt-get install --no-install-recommends -y gcc git python3-dev python3-pip build-essential libssl-dev\
+  && apt-get install --no-install-recommends -y gcc git python3-dev python3-pip build-essential libffi-dev libssl-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /opt/requirements.txt
 RUN python3 -m pip install --upgrade pip setuptools wheel \
-  && python3 -m pip install --no-build-isolation poetry pendulum \
-  && python3 -m pip install --no-build-isolation -r /opt/requirements.txt \
+  && python3 -m pip install --upgrade -r /opt/requirements.txt \
   && python3 -m pip install git+https://github.com/CommunityHoneyNetwork/hpfeeds3.git
 
 COPY . /opt/
