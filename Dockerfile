@@ -14,7 +14,7 @@ ENV DEBIAN_FRONTEND "noninteractive"
 # hadolint ignore=DL3008,DL3005
 RUN apt-get update \
   && apt-get upgrade -y \
-  && apt-get install --no-install-recommends -y gcc git python3-dev python3-pip build-essential\
+  && apt-get install --no-install-recommends -y gcc git python3-dev python3-pip build-essential libssl-dev\
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
