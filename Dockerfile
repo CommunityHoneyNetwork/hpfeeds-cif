@@ -20,7 +20,7 @@ RUN apt-get update \
 
 COPY requirements.txt /opt/requirements.txt
 RUN python3 -m pip install --upgrade pip setuptools wheel \
-  && python3 -m pip install -r /opt/requirements.txt \
+  && python3 -m pip install --no-build-isolation -r /opt/requirements.txt \
   && python3 -m pip install git+https://github.com/CommunityHoneyNetwork/hpfeeds3.git
 
 COPY . /opt/
