@@ -223,8 +223,8 @@ def main():
     hpc.subscribe(channels)
     try:
         hpc.run(on_message, on_error)
-    except:
-        pass
+    except Exception as e:
+        logging.error('Exiting hpc run: {}'.format(e))
     finally:
         hpc.close()
 
