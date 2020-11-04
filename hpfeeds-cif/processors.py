@@ -745,7 +745,7 @@ def ssh_auth_logger_events(identifier, payload):
         direction='inbound',
         ids_type='network',
         severity='high',
-        signature='Connection to honeypot',
+        signature='Connection to Honeypot',
         ssh_username=dec.duser
     )
 
