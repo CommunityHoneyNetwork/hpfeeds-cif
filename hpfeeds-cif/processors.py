@@ -760,6 +760,50 @@ def ssh_auth_logger_events(identifier, payload):
 
     return base_message
 
+def honeydb_agent_events(identifier, payload):
+    try:
+        dec = ezdict(json.loads(str(payload)))
+    except:
+        logger.warning('exception processing honeydb-agent event')
+        traceback.print_exc()
+        return
+
+    if dec.event == 'TX':
+        # Ignore server responses to attackers
+        logger.debug('Ignoring honeydb-agent response to attacker message')
+        return
+
+    tags = []
+    if dec['tags']:
+        tags = dec['tags']
+
+    base_message = create_message(
+        'honeydb-agent',
+        identifier,
+        tags=tags,
+        src_ip=dec.remote_host,
+        dst_ip=dec.local_host,
+        src_port=dec.remote_port,
+        dst_port=dec.local_port,
+        vendor_product='honeydb-agent',
+        app='honeydb-agent',
+        direction='inbound',
+        ids_type='network',
+        severity='high',
+        service=dec.service,
+        bytes=dec.bytes,
+        signature='Connection to Honeypot'
+    )
+
+    if dec.data:
+        try:
+            data = bytes.fromhex(dec.data).decode('utf8')
+            base_message['data'] = data
+        except Exception as e:
+            logger.warning('Failed to hex-decode data in honeydb-agent log: data: {} exceptiom: {}'.format(dec.data,e))
+
+    return base_message
+
 PROCESSORS = {
     'amun.events': [amun_events],
     'glastopf.events': [glastopf_event],
@@ -778,7 +822,8 @@ PROCESSORS = {
     'rdphoney.sessions': [rdphoney_sessions],
     'uhp.events': [uhp_events],
     'elasticpot.events': [elasticpot_events],
-    'ssh-auth-logger.events': [ssh_auth_logger_events]
+    'ssh-auth-logger.events': [ssh_auth_logger_events],
+    'honeydb-agent.events': [honeydb_agent_events]
 }
 
 
