@@ -1,13 +1,13 @@
 FROM ubuntu:18.04
 
-LABEL maintainer Team STINGAR <team-stingar@duke.edu>
-LABEL name "hpfeeds-cif"
-LABEL version "1.9"
-LABEL release "1"
-LABEL summary "HPFeeds CIFv3 handler"
-LABEL description "HPFeeds CIFv3 handler is a tool for generating CIFv3 submissions for honeypot events."
-LABEL authoritative-source-url "https://github.com/CommunityHoneyNetwork/hpfeeds-cif"
-LABEL changelog-url "https://github.com/CommunityHoneyNetwork/hpfeeds-cif/commits/master"
+LABEL maintainer="Team Stingar <team-stingar@duke.edu>"
+LABEL name="hpfeeds-cif"
+LABEL version="1.9.1"
+LABEL release="1"
+LABEL summary="HPFeeds CIFv3 handler"
+LABEL description="HPFeeds CIFv3 handler is a tool for generating CIFv3 submissions for honeypot events."
+LABEL authoritative-source-url="https://github.com/CommunityHoneyNetwork/hpfeeds-cif"
+LABEL changelog-url="https://github.com/CommunityHoneyNetwork/hpfeeds-cif/commits/master"
 
 ENV DEBIAN_FRONTEND "noninteractive"
 
