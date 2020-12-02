@@ -59,7 +59,7 @@ def parse_ignore_cidr_option(cidrlist):
             i = IP(s)
             l.append(i)
         except ValueError as e:
-            logging.warn('Received invalid CIDR in ignore_cidr: {}'.format(e))
+            logging.warning('Received invalid CIDR in ignore_cidr: {}'.format(e))
     return l
 
 
